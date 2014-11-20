@@ -4,23 +4,15 @@ import ( "fmt"
 "net"
 "encoding/gob")
 
-func sender(conn net.Conn){
-	for{
-		var msg string
-
-		fmt.Scanf("%s",&msg)
-	
-		err := gob.NewEncoder(conn).Encode(msg)
-	
-		if err != nil{
-			fmt.Println(err)
-		}
-	}
+type Person struct{
+	Name string
+	Age int
 }
+
 
 func handleRequest(conn net.Conn) {
   var msg string
-  fmt.Println("handle start")
+  fmt.Println("handles start")
   for msg != "End"{
   err := gob.NewDecoder(conn).Decode(&msg)
   
@@ -43,7 +35,12 @@ func main(){
 
 		fmt.Scanf("%s",&msg)
 	
-		err := gob.NewEncoder(conn).Encode(msg)
+		person:= Person{msg, 20}
+		
+		fmt.Println(person)
+		
+		err := gob.NewEncoder(conn).Encode(person)
+		//err := gob.NewEncoder(conn).Encode(msg)
 	
 		if err != nil{
 			fmt.Println("2",err)

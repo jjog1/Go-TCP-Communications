@@ -10,6 +10,10 @@ const (
     CONN_TYPE = "tcp"
 )
 
+type Person struct{
+	Name string
+	Age int
+}
 
 func main(){
 	l, err := net.Listen(CONN_TYPE, 
@@ -34,9 +38,9 @@ func main(){
 
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
-  var msg string
+  var msg Person
   
-  for msg != "End"{
+  for{
   err := gob.NewDecoder(conn).Decode(&msg)
   
   if err!= nil{
@@ -44,7 +48,8 @@ func handleRequest(conn net.Conn) {
 	return
   }else{
 	fmt.Println("Recieved", msg)}
-	gob.NewEncoder(conn).Encode("Hello")
+	response := "Hello " + msg.Name
+	gob.NewEncoder(conn).Encode(response)
   }
   
   conn.Close()
