@@ -13,8 +13,9 @@ type Person struct{
 func handleRequest(conn net.Conn) {
   var msg string
   fmt.Println("handles start")
+  dec:=gob.NewDecoder(conn)
   for msg != "End"{
-  err := gob.NewDecoder(conn).Decode(&msg)
+  err := dec.Decode(&msg)
   
   if err!= nil{
 	fmt.Println(err)
@@ -30,20 +31,29 @@ func main(){
 	conn, _ := net.Dial("tcp", "127.0.0.1:3333")
 	defer conn.Close()
 	go handleRequest(conn)
+
 	for{
 		var msg string
 
-		fmt.Scanf("%s",&msg)
-	
+		length,_ := fmt.Scanf("%s",&msg)
+
+		fmt.Println("Length: ",length)
 		person:= Person{msg, 20}
 		
-		fmt.Println(person)
+		fmt.Println("Client",person)
 		
-		err := gob.NewEncoder(conn).Encode(person)
-		//err := gob.NewEncoder(conn).Encode(msg)
-	
-		if err != nil{
-			fmt.Println("2",err)
+		//Scanf seems to be reading a second blank line
+		//for every input. 
+		if length > 0{
+			// Creating a new encoder doesn't seem the best 
+			// way to do this. 
+			err := gob.NewEncoder(conn).Encode(&person)
+				
+			if err != nil{
+				fmt.Println("2",err)
+			}
+			
+			length = 0
 		}
 	}
 }
