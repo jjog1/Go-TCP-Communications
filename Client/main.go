@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-type Person struct {
-	Name string
-	Age  int
+type Communication struct {
+	Name    string
+	Message string
 }
 
 func handleRequest(conn net.Conn) {
@@ -36,18 +36,18 @@ func main() {
 	defer conn.Close()
 	reader := bufio.NewReader(os.Stdin)
 	go handleRequest(conn)
+	name, _ := reader.ReadString('\n')
 
 	for {
-		msg, _ := reader.ReadString('\n')
 
+		msg, _ := reader.ReadString('\n')
+		comm := Communication{name, msg}
 		//Scanf seems to be reading a second blank line
 		//for every input.
 
-		person := Person{msg, 20}
-
 		// Creating a new encoder doesn't seem the best
 		// way to do this.
-		err := gob.NewEncoder(conn).Encode(&person)
+		err := gob.NewEncoder(conn).Encode(&comm)
 
 		if err != nil {
 			fmt.Println("2", err)
