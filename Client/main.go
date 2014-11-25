@@ -14,17 +14,17 @@ type Communication struct {
 }
 
 func handleRequest(conn net.Conn) {
-	var msg string
+	var msg Communication
 	fmt.Println("handles start")
 	dec := gob.NewDecoder(conn)
-	for msg != "End" {
+	for msg.Message != "End" {
 		err := dec.Decode(&msg)
 
 		if err != nil {
 			fmt.Println(err)
 			return
 		} else {
-			fmt.Println("Recieved", msg)
+			fmt.Println(msg.Name +": " +msg.Message)
 		}
 	}
 
@@ -36,11 +36,13 @@ func main() {
 	defer conn.Close()
 	reader := bufio.NewReader(os.Stdin)
 	go handleRequest(conn)
+	fmt.Println("Please Enter your name:")
 	name, _ := reader.ReadString('\n')
 
 	for {
 
 		msg, _ := reader.ReadString('\n')
+
 		comm := Communication{name, msg}
 		//Scanf seems to be reading a second blank line
 		//for every input.

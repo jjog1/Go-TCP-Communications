@@ -22,8 +22,7 @@ type Communication struct {
 	Message string
 }
 
-var people [2]Person = [2]Person{}
-var index = 0
+var people map[string]Person = make(map[string]Person)
 
 func main() {
 	l, err := net.Listen(CONN_TYPE,
@@ -51,8 +50,7 @@ func handleRequest(conn net.Conn) {
 	var msg Communication
 	// First message should be the username
 	gob.NewDecoder(conn).Decode(&msg)
-	people[index] = Person{msg.Name, conn}
-	index += 1
+	people[msg.Name] = Person{msg.Name, conn}
 
 	for {
 		err := gob.NewDecoder(conn).Decode(&msg)
